@@ -14,6 +14,11 @@ app.get('/api/products', (req, res) => {
   res.json(data.products);
 });
 
+app.get('/api/products/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  res.json(data.products.find((product) => product.id === id));
+});
+
 app.post('/api/products', (req, res) => {
   const productIds = data.products.map((product) => product.id);
   const productId = Math.max(...productIds) + 1;
