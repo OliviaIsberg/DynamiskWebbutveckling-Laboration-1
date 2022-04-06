@@ -1,0 +1,29 @@
+GET http://localhost:3000/api/products/
+
+###
+
+POST http://localhost:3000/api/products/
+Content-Type: application/json
+
+{
+    "name": "Nocco",
+    "price": 28,
+    "image": "https://www.proteinbolaget.se/img/bilder/artiklar/zoom/PB-22031288_2.jpg?m=1647943963"
+}
+
+###
+
+PUT http://localhost:3000/api/products/3/
+Content-Type: application/json
+
+{
+    "id": 7,
+    "name": "Nocco",
+    "price": 28,
+    "image": "https://www.proteinbolaget.se/img/bilder/artiklar/zoom/PB-22031288_2.jpg?m=1647943963"
+}
+
+
+###
+
+DELETE http://localhost:3000/api/products/3/
