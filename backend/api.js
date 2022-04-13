@@ -12,6 +12,7 @@ function saveData() {
 
 app.get('/api/products', (req, res) => {
   res.json(data.products);
+  res.end();
 });
 
 app.get('/api/products/:id', (req, res) => {
@@ -24,6 +25,7 @@ app.get('/api/products/:id', (req, res) => {
   }
 
   res.json(product);
+  res.end();
 });
 
 app.post('/api/products', (req, res) => {
@@ -33,9 +35,11 @@ app.post('/api/products', (req, res) => {
   product.id = productId;
   data.products.push(product);
   saveData();
+  res.end();
 });
 
 app.put('/api/products/:id', (req, res) => {
+  console.log(req.body);
   const id = parseInt(req.params.id);
   const index = data.products.findIndex((product) => product.id === id);
   if (index === -1) {
@@ -48,6 +52,7 @@ app.put('/api/products/:id', (req, res) => {
   product.id = data.products[index].id;
   data.products[index] = product;
   saveData();
+  res.end();
 });
 
 app.delete('/api/products/:id', (req, res) => {
@@ -61,6 +66,7 @@ app.delete('/api/products/:id', (req, res) => {
 
   data.products.splice(index, 1);
   saveData();
+  res.end();
 });
 
 app.use(express.static('public'));
