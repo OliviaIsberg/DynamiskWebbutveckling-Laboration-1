@@ -12,7 +12,6 @@ function saveData() {
 
 app.get('/api/products', (req, res) => {
   res.json(data.products);
-  res.end();
 });
 
 app.get('/api/products/:id', (req, res) => {
@@ -20,12 +19,11 @@ app.get('/api/products/:id', (req, res) => {
   const product = data.products.find((product) => product.id === id);
   if (product === undefined) {
     res.status(404);
-    res.send();
+    res.json({ error: 'Product not found' });
     return;
   }
 
   res.json(product);
-  res.end();
 });
 
 app.post('/api/products', (req, res) => {
@@ -35,11 +33,10 @@ app.post('/api/products', (req, res) => {
   product.id = productId;
   data.products.push(product);
   saveData();
-  res.end();
+  res.json(product);
 });
 
 app.put('/api/products/:id', (req, res) => {
-  console.log(req.body);
   const id = parseInt(req.params.id);
   const index = data.products.findIndex((product) => product.id === id);
   if (index === -1) {

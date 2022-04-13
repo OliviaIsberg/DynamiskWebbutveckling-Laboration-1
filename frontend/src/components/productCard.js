@@ -5,37 +5,23 @@ import {
   Button,
   Box,
   ButtonGroup,
+  Chip,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SyncSharpIcon from '@mui/icons-material/SyncSharp';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 
 function editProductReducer(state, action) {
-  console.log(action.type);
-  console.log(action);
-
   switch (action.type) {
     case 'change':
       return { ...state, [action.payload.key]: action.payload.value };
-    case 'save':
-      fetch('/api/products/' + state.id, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(state),
-      }).then((response) => {
-        console.log(response);
-        action.payload.getProducts();
-      });
-      return state;
-    case 'reset':
-      return state;
-    case 'delete':
-      return state;
+
     case 'update':
-      return state;
+      return { ...action.payload.state };
+
     default:
       throw new Error();
   }
@@ -46,16 +32,30 @@ function ProductCard(props) {
     ...props.product,
   });
 
+  const isEdited = Object.entries(props.product).some(
+    ([key, value]) => state[key] !== value
+  );
+
+  useEffect(() => {
+    dispatch({ type: 'update', payload: { state: props.product } });
+  }, [props.product]);
+
   return (
-    <Accordion>
+    <Accordion expanded={props.expanded}>
       <AccordionSummary
         sx={{ display: 'flex', justifyContent: 'space-between' }}
         expandIcon={<ExpandMoreIcon />}
       >
-        <Box sx={{ flexGrow: 1 }}>{props.product.name}</Box>
-        <Box>
-          <Button startIcon={<SyncSharpIcon />}>Uppdatera</Button>
-        </Box>
+        <Box sx={{ flexGrow: 1 }}>{state.name}</Box>
+        {isEdited ? <Chip label="OSPARAD" variant="outlined" /> : null}
+        {props.updateProduct !== undefined ? (
+          <Button
+            onClick={() => props.updateProduct(state.id)}
+            startIcon={<SyncSharpIcon />}
+          >
+            Uppdatera
+          </Button>
+        ) : null}
       </AccordionSummary>
       <AccordionDetails>
         <Box>
@@ -101,18 +101,27 @@ function ProductCard(props) {
         <div>
           <ButtonGroup size="small" color="secondary" variant="outlined">
             <Button
-              onClick={() =>
-                dispatch({
-                  type: 'save',
-                  payload: { getProducts: props.getProducts },
-                })
-              }
+              disabled={!isEdited}
+              onClick={() => props.saveProduct(state)}
               startIcon={<SaveIcon />}
             >
               Spara
             </Button>
-            <Button startIcon={<RestartAltIcon />}>Återställ</Button>
-            <Button startIcon={<DeleteForeverIcon />}>Radera</Button>
+            <Button
+              disabled={!isEdited}
+              onClick={() => {
+                dispatch({ type: 'update', payload: { state: props.product } });
+              }}
+              startIcon={<RestartAltIcon />}
+            >
+              Återställ
+            </Button>
+            <Button
+              onClick={() => props.deleteProduct(state.id)}
+              startIcon={<DeleteForeverIcon />}
+            >
+              Radera
+            </Button>
           </ButtonGroup>
         </div>
       </AccordionDetails>
