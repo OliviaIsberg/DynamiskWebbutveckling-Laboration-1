@@ -28,7 +28,7 @@ function editProductReducer(state, action) {
   }
 }
 
-function ProductCard(props) {
+function ProductPage(props) {
   const [state, dispatch] = useReducer(editProductReducer, {
     ...props.product,
   });
@@ -142,4 +142,4 @@ function ProductCard(props) {
   );
 }
 
-export default ProductCard;
+export default ProductPage;

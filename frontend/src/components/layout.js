@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
-import ProductCard from './productCard';
+import ProductPage from './productPage';
 import { useEffect, useState } from 'react';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import {
@@ -67,7 +67,7 @@ function Layout() {
       </div>
 
       {products.map((product, index) => (
-        <ProductCard
+        <ProductPage
           key={index}
           product={product}
           updateProduct={loadProduct}
@@ -84,7 +84,7 @@ function Layout() {
           Lägg till produkt
         </Button>
       ) : (
-        <ProductCard
+        <ProductPage
           expanded={true}
           product={{ name: '', image: '', price: '' }}
           canUpdate={false}
