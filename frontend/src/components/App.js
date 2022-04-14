@@ -1,7 +1,7 @@
-import Layout from './layout';
+import ProductPage from './ProductPage';
 
 function App() {
-  return <Layout />;
+  return <ProductPage />;
 }
 
 export default App;

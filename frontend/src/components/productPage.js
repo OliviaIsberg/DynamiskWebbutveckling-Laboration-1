@@ -1,144 +1,98 @@
+import * as React from 'react';
+import Typography from '@mui/material/Typography';
+import { Button } from '@mui/material';
+import ProductAccordion from './ProductAccordion';
+import { useEffect, useState } from 'react';
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Button,
-  Box,
-  ButtonGroup,
-  Chip,
-  Typography,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import SaveIcon from '@mui/icons-material/Save';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import SyncSharpIcon from '@mui/icons-material/SyncSharp';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { useEffect, useReducer } from 'react';
+  createProduct,
+  readProduct,
+  updateProduct,
+  deleteProduct,
+} from '../api';
 
-function editProductReducer(state, action) {
-  switch (action.type) {
-    case 'change':
-      return { ...state, [action.payload.key]: action.payload.value };
+function ProductPage() {
+  const [products, setProducts] = useState([]);
+  const [addingNewProduct, setAddingNewProduct] = useState(false);
 
-    case 'update':
-      return { ...action.payload.state };
+  const saveNewProduct = (product) =>
+    createProduct(product).then((newProduct) => {
+      setAddingNewProduct(false);
+      const newProducts = [...products, newProduct];
+      setProducts(newProducts);
+    });
 
-    default:
-      throw new Error();
-  }
-}
+  const loadProduct = (id) =>
+    readProduct(id).then((product) => {
+      const productIndex = products.findIndex((p) => p.id === product.id);
+      const newProducts = [...products];
+      newProducts.splice(productIndex, 1, product);
 
-function ProductPage(props) {
-  const [state, dispatch] = useReducer(editProductReducer, {
-    ...props.product,
-  });
+      setProducts(newProducts);
+    });
 
-  const isEdited = Object.entries(props.product).some(
-    ([key, value]) => state[key] !== value
-  );
+  const saveExistingProduct = (product) => {
+    updateProduct(product).then((response) => {
+      const productIndex = products.findIndex((p) => p.id === product.id);
+      const newProducts = [...products];
+      newProducts.splice(productIndex, 1, product);
+
+      setProducts(newProducts);
+    });
+  };
+
+  const deleteExistingProduct = (id) =>
+    deleteProduct(id).then((response) => {
+      setProducts(products.filter((p) => p.id !== id));
+    });
+
+  const addNewProduct = () => setAddingNewProduct(true);
+
+  const deleteNewProduct = (id) => {
+    setAddingNewProduct(false);
+  };
 
   useEffect(() => {
-    dispatch({ type: 'update', payload: { state: props.product } });
-  }, [props.product]);
+    fetch('/api/products')
+      .then((response) => response.json())
+      .then((data) => setProducts(data));
+  }, []);
 
   return (
-    <Accordion expanded={props.expanded}>
-      <AccordionSummary
-        sx={{ display: 'flex', justifyContent: 'space-between' }}
-        expandIcon={<ExpandMoreIcon />}
-      >
-        <Box sx={{ flexGrow: 1 }}>{state.name}</Box>
-        {isEdited ? <Chip label="OSPARAD" variant="outlined" /> : null}
-        {props.updateProduct !== undefined ? (
-          <Button
-            onClick={() => props.updateProduct(state.id)}
-            startIcon={<SyncSharpIcon />}
-          >
-            Uppdatera
-          </Button>
-        ) : null}
-      </AccordionSummary>
-      <AccordionDetails>
-        <Box>
-          <Typography variant="subtitle2">Titel</Typography>
-          <input
-            onChange={(e) =>
-              dispatch({
-                type: 'change',
-                payload: { key: 'name', value: e.target.value },
-              })
-            }
-            type="text"
-            value={state.name}
-          ></input>
-        </Box>
-        <Box>
-          <img src={state.image} height="150" alt=""></img>
-        </Box>
-        <Box sx={{ marginBottom: '1rem' }}>
-          <Typography variant="subtitle2">Bild URL</Typography>
-          <input
-            onChange={(e) =>
-              dispatch({
-                type: 'change',
-                payload: { key: 'image', value: e.target.value },
-              })
-            }
-            type="text"
-            value={state.image}
-          ></input>
-        </Box>
+    <div style={{ minHeight: '100vh', background: '#bcf7f2' }}>
+      <div style={{ background: '#45f7e8', padding: '1.5rem' }}>
+        <Typography sx={{ textAlign: 'center', fontSize: '26px' }}>
+          Produkter
+        </Typography>
+      </div>
 
-        <Box sx={{ marginBottom: '1rem' }}>
-          <Typography variant="subtitle2">Pris</Typography>
-          <input
-            onChange={(e) =>
-              dispatch({
-                type: 'change',
-                payload: { key: 'price', value: e.target.value },
-              })
-            }
-            type="number"
-            value={state.price}
-          ></input>
-        </Box>
-        <div>
-          <ButtonGroup
-            sx={{
-              '@media screen and (max-width: 440px)': {
-                flexDirection: 'column',
-              },
-            }}
-            size="small"
-            color="secondary"
-            variant="outlined"
-          >
-            <Button
-              disabled={!isEdited}
-              onClick={() => props.saveProduct(state)}
-              startIcon={<SaveIcon />}
-            >
-              Spara
-            </Button>
-            <Button
-              disabled={!isEdited}
-              onClick={() => {
-                dispatch({ type: 'update', payload: { state: props.product } });
-              }}
-              startIcon={<RestartAltIcon />}
-            >
-              Återställ
-            </Button>
-            <Button
-              onClick={() => props.deleteProduct(state.id)}
-              startIcon={<DeleteForeverIcon />}
-            >
-              Radera
-            </Button>
-          </ButtonGroup>
-        </div>
-      </AccordionDetails>
-    </Accordion>
+      {products.map((product, index) => (
+        <ProductAccordion
+          key={index}
+          product={product}
+          updateProduct={loadProduct}
+          saveProduct={saveExistingProduct}
+          deleteProduct={deleteExistingProduct}
+        />
+      ))}
+      {!addingNewProduct ? (
+        <Button
+          onClick={addNewProduct}
+          size="large"
+          startIcon={<AddCircleOutlineRoundedIcon />}
+        >
+          Lägg till produkt
+        </Button>
+      ) : (
+        <ProductAccordion
+          expanded={true}
+          product={{ name: '', image: '', price: '' }}
+          canUpdate={false}
+          saveProduct={saveNewProduct}
+          deleteProduct={deleteNewProduct}
+        />
+      )}
+    </div>
   );
 }
 
