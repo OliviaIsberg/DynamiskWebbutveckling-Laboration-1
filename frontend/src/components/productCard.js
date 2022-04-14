@@ -6,6 +6,7 @@ import {
   Box,
   ButtonGroup,
   Chip,
+  Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SaveIcon from '@mui/icons-material/Save';
@@ -59,6 +60,7 @@ function ProductCard(props) {
       </AccordionSummary>
       <AccordionDetails>
         <Box>
+          <Typography variant="subtitle2">Titel</Typography>
           <input
             onChange={(e) =>
               dispatch({
@@ -74,6 +76,7 @@ function ProductCard(props) {
           <img src={state.image} height="150" alt=""></img>
         </Box>
         <Box sx={{ marginBottom: '1rem' }}>
+          <Typography variant="subtitle2">Bild URL</Typography>
           <input
             onChange={(e) =>
               dispatch({
@@ -87,6 +90,7 @@ function ProductCard(props) {
         </Box>
 
         <Box sx={{ marginBottom: '1rem' }}>
+          <Typography variant="subtitle2">Pris</Typography>
           <input
             onChange={(e) =>
               dispatch({
@@ -99,7 +103,16 @@ function ProductCard(props) {
           ></input>
         </Box>
         <div>
-          <ButtonGroup size="small" color="secondary" variant="outlined">
+          <ButtonGroup
+            sx={{
+              '@media screen and (max-width: 440px)': {
+                flexDirection: 'column',
+              },
+            }}
+            size="small"
+            color="secondary"
+            variant="outlined"
+          >
             <Button
               disabled={!isEdited}
               onClick={() => props.saveProduct(state)}
