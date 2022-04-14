@@ -1,8 +1,11 @@
+const path = require('path');
 const express = require('express');
+var fs = require('fs');
+
+const port = 3000;
+
 const app = express();
 app.use(express.json());
-var fs = require('fs');
-const port = 3000;
 
 const data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
 
@@ -66,7 +69,8 @@ app.delete('/api/products/:id', (req, res) => {
   res.end();
 });
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '..', 'build')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.listen(port, () => {
   console.log('Running on port ' + port);

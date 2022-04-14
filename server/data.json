@@ -9,8 +9,8 @@
     {
       "id": 2,
       "name": "Red Bull",
-      "price": 25,
-      "image": "https://gottebiten.se/media/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/9/0/9002490215408.jpg"
+      "image": "https://gottebiten.se/media/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/9/0/9002490215408.jpg",
+      "price": 25
     },
     {
       "id": 3,
