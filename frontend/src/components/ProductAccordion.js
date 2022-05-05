@@ -95,7 +95,7 @@ function ProductAccordion(props) {
             onChange={(e) =>
               dispatch({
                 type: 'change',
-                payload: { key: 'price', value: e.target.value },
+                payload: { key: 'price', value: parseInt(e.target.value) },
               })
             }
             type="number"
